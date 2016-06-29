@@ -43,7 +43,7 @@ public class PullToRefresh: NSObject {
         scrollView?.addObserver(self, forKeyPath: contentOffsetKeyPath, options: .Initial, context: &KVOContext)
     }
     
-    private func removeScrollViewObserving() {
+    func removeScrollViewObserving() {
         scrollView?.removeObserver(self, forKeyPath: contentOffsetKeyPath, context: &KVOContext)
     }
 
@@ -55,28 +55,23 @@ public class PullToRefresh: NSObject {
             switch state {
             case .Loading:
                 if let scrollView = scrollView where (oldValue != .Loading) {
-                    scrollView.contentOffset = previousScrollViewOffset
-                    scrollView.bounces = false
-                    UIView.animateWithDuration(0.3, animations: {
-                        let insets = self.refreshView.frame.height + self.scrollViewDefaultInsets.top
-                        scrollView.contentInset.top = insets
-                        
-                        scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, -insets)
-                        }, completion: { finished in
-                            scrollView.bounces = true
-                    })
-                    
+                    scrollView.setContentOffset(CGPoint(x: previousScrollViewOffset.x, y: -scrollViewDefaultInsets.top - refreshView.frame.height), animated: true)
                     action?()
                 }
             case .Finished:
                 removeScrollViewObserving()
-                UIView.animateWithDuration(0.3, delay: hideDelay, options: .CurveEaseInOut, animations: {
-                    self.scrollView?.contentInset = self.scrollViewDefaultInsets
-                    self.scrollView?.contentOffset.y = -self.scrollViewDefaultInsets.top
-                }, completion: { finished in
-                    self.addScrollViewObserving()
-                    self.state = .Inital
-                })
+                if scrollView?.contentOffset.y <= -scrollViewDefaultInsets.top {
+                    UIView.animateWithDuration(0.3, delay: hideDelay, options: .CurveEaseInOut, animations: {
+                        self.scrollView?.contentOffset.y = -self.scrollViewDefaultInsets.top
+                        }, completion: { finished in
+                            self.addScrollViewObserving()
+                            self.state = .Inital
+                    })
+                } else {
+                    addScrollViewObserving()
+                    state = .Inital
+                }
+                
             default: break
             }
         }
@@ -140,7 +135,7 @@ public class PullToRefresh: NSObject {
             Int64(0.27 * Double(NSEC_PER_SEC)))
         
         dispatch_after(delayTime, dispatch_get_main_queue(), {
-                self.state = State.Loading
+                self.state = .Loading
             })
     }
     
@@ -183,9 +178,17 @@ class DefaultRefreshView: UIView {
     
     // MARK: - Private Properties
     
-    let frameHeight: CGFloat = 56 // 44 + 12
+    private let laoderContentHeight: CGFloat = 44
+    
+    private var frameHeight: CGFloat {
+        return laoderContentHeight + sectionInsetTop + sectionInsetBottom
+    }
     
     // MARK: - Internal Properties
+    
+    var sectionInsetTop: CGFloat = 0
+    
+    var sectionInsetBottom: CGFloat = 12
     
     private(set) var activityIndicator: UIActivityIndicatorView!
     
@@ -232,7 +235,7 @@ class DefaultRefreshView: UIView {
     private func centerActivityIndicator() {
         if activityIndicator != nil {
             activityIndicator.center = convertPoint(center, fromView: superview)
-            activityIndicator.center.y += 12/2
+            activityIndicator.center.y += (sectionInsetBottom - sectionInsetTop) / 2
         }
     }
 }
@@ -250,7 +253,14 @@ class DefaultViewAnimator: RefreshViewAnimator {
         case .Releasing(let progress):
             refreshView.activityIndicator?.hidden = false
             refreshView.alpha = progress
-        case .Loading: refreshView.activityIndicator?.startAnimating()
+            var transform = CGAffineTransformMakeScale(0.75, 0.75)
+            transform = CGAffineTransformScale(transform, progress, progress);
+            transform = CGAffineTransformRotate(transform, 3.14 * progress * 2);
+            refreshView.activityIndicator?.transform = transform
+        case .Loading:
+            refreshView.alpha = 1
+            refreshView.activityIndicator?.transform = CGAffineTransformMakeScale(0.75, 0.75)
+            refreshView.activityIndicator?.startAnimating()
         default: break
         }
     }

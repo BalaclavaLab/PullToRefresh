@@ -17,7 +17,7 @@ public protocol RefreshViewAnimator {
 
 public class PullToRefresh: NSObject {
     
-    public var hideDelay: NSTimeInterval = 0
+    public var hideDelay: NSTimeInterval = 0.5
 
     let refreshView: UIView
     var action: (() -> ())?
@@ -70,7 +70,7 @@ public class PullToRefresh: NSObject {
                 }
             case .Finished:
                 removeScrollViewObserving()
-                UIView.animateWithDuration(1, delay: hideDelay, usingSpringWithDamping: 0.4, initialSpringVelocity: 0.8, options: UIViewAnimationOptions.CurveLinear, animations: {
+                UIView.animateWithDuration(0.3, delay: hideDelay, options: .CurveEaseInOut, animations: {
                     self.scrollView?.contentInset = self.scrollViewDefaultInsets
                     self.scrollView?.contentOffset.y = -self.scrollViewDefaultInsets.top
                 }, completion: { finished in
@@ -180,27 +180,38 @@ public func ==(a: State, b: State) -> Bool {
 // MARK: Default PullToRefresh
 
 class DefaultRefreshView: UIView {
-    private(set) var activicyIndicator: UIActivityIndicatorView!
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
+    // MARK: - Private Properties
+    
+    let frameHeight: CGFloat = 56 // 44 + 12
+    
+    // MARK: - Internal Properties
+    
+    private(set) var activityIndicator: UIActivityIndicatorView!
+    
+    // MARK: - Object Lifecycle
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+    
     private func commonInit() {
-        frame = CGRectMake(frame.origin.x, frame.origin.y, frame.width, 40)
+        frame = CGRectMake(frame.origin.x, frame.origin.y, frame.width, frameHeight)
     }
     
     override func layoutSubviews() {
-        if (activicyIndicator == nil) {
-            activicyIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
-            activicyIndicator.hidesWhenStopped = true
-            addSubview(activicyIndicator)
+        if activityIndicator == nil {
+            activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.color = UIColor.blackColor()
+            activityIndicator.transform = CGAffineTransformMakeScale(0.75, 0.75)
+            addSubview(activityIndicator)
         }
         centerActivityIndicator()
         setupFrameInSuperview(superview)
@@ -214,13 +225,14 @@ class DefaultRefreshView: UIView {
     
     private func setupFrameInSuperview(newSuperview: UIView?) {
         if let superview = newSuperview {
-            frame = CGRectMake(frame.origin.x, frame.origin.y, superview.frame.width, 40)
+            frame = CGRectMake(frame.origin.x, frame.origin.y, superview.frame.width, frameHeight)
         }
     }
     
     private func centerActivityIndicator() {
-        if (activicyIndicator != nil) {
-            activicyIndicator.center = convertPoint(center, fromView: superview)
+        if activityIndicator != nil {
+            activityIndicator.center = convertPoint(center, fromView: superview)
+            activityIndicator.center.y += 12/2
         }
     }
 }
@@ -234,15 +246,11 @@ class DefaultViewAnimator: RefreshViewAnimator {
     
     func animateState(state: State) {
         switch state {
-        case .Inital: refreshView.activicyIndicator?.stopAnimating()
+        case .Inital: refreshView.activityIndicator?.stopAnimating()
         case .Releasing(let progress):
-            refreshView.activicyIndicator?.hidden = false
-
-            var transform = CGAffineTransformIdentity
-            transform = CGAffineTransformScale(transform, progress, progress);
-            transform = CGAffineTransformRotate(transform, 3.14 * progress * 2);
-            refreshView.activicyIndicator?.transform = transform
-        case .Loading: refreshView.activicyIndicator?.startAnimating()
+            refreshView.activityIndicator?.hidden = false
+            refreshView.alpha = progress
+        case .Loading: refreshView.activityIndicator?.startAnimating()
         default: break
         }
     }

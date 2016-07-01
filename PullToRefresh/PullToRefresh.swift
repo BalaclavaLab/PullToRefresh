@@ -43,7 +43,7 @@ public class PullToRefresh: NSObject {
         scrollView?.addObserver(self, forKeyPath: contentOffsetKeyPath, options: .Initial, context: &KVOContext)
     }
     
-    func removeScrollViewObserving() {
+    private func removeScrollViewObserving() {
         scrollView?.removeObserver(self, forKeyPath: contentOffsetKeyPath, context: &KVOContext)
     }
 

@@ -55,23 +55,25 @@ public class PullToRefresh: NSObject {
             switch state {
             case .Loading:
                 if let scrollView = scrollView where (oldValue != .Loading) {
-                    scrollView.setContentOffset(CGPoint(x: previousScrollViewOffset.x, y: -scrollViewDefaultInsets.top - refreshView.frame.height), animated: true)
+                    scrollView.contentOffset = previousScrollViewOffset
+                    UIView.animateWithDuration(0.3, animations: {
+                        let insets = self.refreshView.frame.height + self.scrollViewDefaultInsets.top
+                        scrollView.contentInset.top = insets
+                        
+                        scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, -insets)
+                    }, completion: nil)
+                    
                     action?()
                 }
             case .Finished:
                 removeScrollViewObserving()
-                if scrollView?.contentOffset.y <= -scrollViewDefaultInsets.top {
-                    UIView.animateWithDuration(0.3, delay: hideDelay, options: .CurveEaseInOut, animations: {
-                        self.scrollView?.contentOffset.y = -self.scrollViewDefaultInsets.top
-                        }, completion: { finished in
-                            self.addScrollViewObserving()
-                            self.state = .Inital
-                    })
-                } else {
-                    addScrollViewObserving()
-                    state = .Inital
-                }
-                
+                UIView.animateWithDuration(0.3, delay: hideDelay, options: UIViewAnimationOptions.CurveLinear, animations: {
+                    self.scrollView?.contentInset = self.scrollViewDefaultInsets
+                    self.scrollView?.contentOffset.y = -self.scrollViewDefaultInsets.top
+                }, completion: { finished in
+                    self.addScrollViewObserving()
+                    self.state = .Inital
+                })
             default: break
             }
         }

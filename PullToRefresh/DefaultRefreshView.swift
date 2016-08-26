@@ -10,13 +10,24 @@ import UIKit
 
 class DefaultRefreshView: UIView {
     
+    // MARK: - Internal Properties
+    
+    internal var sectionInsetTop: CGFloat = 0
+    
+    internal var sectionInsetBottom: CGFloat = 12
+
+    
+    // MARK: - Internal Properties
+
     private(set) var activityIndicator: UIActivityIndicatorView?
 
     override func layoutSubviews() {
         if activityIndicator == nil {
             activityIndicator = {
-                let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.Gray)
+                let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
                 activityIndicator.hidesWhenStopped = true
+                activityIndicator.color = UIColor.blackColor()
+                activityIndicator.transform = CGAffineTransformMakeScale(0.75, 0.75)
                 addSubview(activityIndicator)
                 return activityIndicator
             }()
@@ -43,6 +54,7 @@ private extension DefaultRefreshView {
      func centerActivityIndicator() {
         if let activityIndicator = activityIndicator {
             activityIndicator.center = convertPoint(center, fromView: superview)
+            activityIndicator.center.y += (sectionInsetBottom - sectionInsetTop) / 2
         }
     }
 }

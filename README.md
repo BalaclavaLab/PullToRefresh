@@ -13,7 +13,7 @@ This component implements pure pull-to-refresh logic and you can use it for deve
 
 ```ruby
 use_frameworks!
-pod 'PullToRefresher', '~> 1.0'
+pod 'PullToRefresher', '~> 1.4.0'
 ```
 
 ##Usage
@@ -37,6 +37,15 @@ tableView.addPullToRefresh(refresher, action: {
     // action to be performed (pull data from some source)
 })
 ```
+
+⚠️ Don't forget to remove pull to refresh when your view controller is releasing. ⚠️
+
+```swift
+    deinit {
+        tableView.removePullToRefresh(tableView.topPullToRefresh!)
+    }
+```
+
 
 After the action is completed and you want to hide the refresher:
 

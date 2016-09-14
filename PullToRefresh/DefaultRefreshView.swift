@@ -19,15 +19,15 @@ class DefaultRefreshView: UIView {
     
     // MARK: - Internal Properties
 
-    private(set) var activityIndicator: UIActivityIndicatorView?
+    fileprivate(set) var activityIndicator: UIActivityIndicatorView?
 
     override func layoutSubviews() {
         if activityIndicator == nil {
             activityIndicator = {
-                let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+                let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
                 activityIndicator.hidesWhenStopped = true
-                activityIndicator.color = UIColor.blackColor()
-                activityIndicator.transform = CGAffineTransformMakeScale(0.75, 0.75)
+                activityIndicator.color = UIColor.black
+                activityIndicator.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
                 addSubview(activityIndicator)
                 return activityIndicator
             }()
@@ -37,23 +37,23 @@ class DefaultRefreshView: UIView {
         super.layoutSubviews()
     }
     
-    override func willMoveToSuperview(newSuperview: UIView?) {
-        super.willMoveToSuperview(newSuperview)
+    override func willMove(toSuperview newSuperview: UIView?) {
+        super.willMove(toSuperview: newSuperview)
         setupFrameInSuperview(superview)
     }
 }
 
 private extension DefaultRefreshView {
     
-    func setupFrameInSuperview(newSuperview: UIView?) {
+    func setupFrameInSuperview(_ newSuperview: UIView?) {
         if let superview = newSuperview {
-            frame = CGRectMake(frame.origin.x, frame.origin.y, superview.frame.width, frame.height)
+            frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: superview.frame.width, height: frame.height)
         }
     }
     
      func centerActivityIndicator() {
         if let activityIndicator = activityIndicator {
-            activityIndicator.center = convertPoint(center, fromView: superview)
+            activityIndicator.center = convert(center, from: superview)
             activityIndicator.center.y += (sectionInsetBottom - sectionInsetTop) / 2
         }
     }

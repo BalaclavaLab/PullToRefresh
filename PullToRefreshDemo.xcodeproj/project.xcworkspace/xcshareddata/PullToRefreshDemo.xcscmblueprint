@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "FE606276DAF45C54747BB15A62DC3244BAA540CA",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "FE606276DAF45C54747BB15A62DC3244BAA540CA" : 0,
+    "1A1D98DA625BCA01CD27E539D29A940067B6498B" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "455DC4F0-FB23-4530-9E14-899ECF5434F2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "FE606276DAF45C54747BB15A62DC3244BAA540CA" : "PullToRefresh\/",
+    "1A1D98DA625BCA01CD27E539D29A940067B6498B" : ".."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "PullToRefreshDemo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "PullToRefreshDemo.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:MintMe\/mint-app-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1A1D98DA625BCA01CD27E539D29A940067B6498B"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Yalantis\/PullToRefresh.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FE606276DAF45C54747BB15A62DC3244BAA540CA"
+    }
+  ]
+}

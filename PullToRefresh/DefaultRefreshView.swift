@@ -16,44 +16,42 @@ class DefaultRefreshView: UIView {
     
     internal var sectionInsetBottom: CGFloat = 12
 
-    
     // MARK: - Internal Properties
 
-    private(set) var activityIndicator: UIActivityIndicatorView?
+    fileprivate(set) lazy var activityIndicator: UIActivityIndicatorView! = {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = UIColor.black
+        activityIndicator.transform = CGAffineTransform.identity.scaledBy(x: 0.75, y: 0.75)
+        self.addSubview(activityIndicator)
+        return activityIndicator
+    }()
 
     override func layoutSubviews() {
-        if activityIndicator == nil {
-            activityIndicator = {
-                let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
-                activityIndicator.hidesWhenStopped = true
-                activityIndicator.color = UIColor.blackColor()
-                activityIndicator.transform = CGAffineTransformMakeScale(0.75, 0.75)
-                addSubview(activityIndicator)
-                return activityIndicator
-            }()
-        }
         centerActivityIndicator()
-        setupFrameInSuperview(superview)
+        setupFrame(in: superview)
+        
         super.layoutSubviews()
     }
     
-    override func willMoveToSuperview(newSuperview: UIView?) {
-        super.willMoveToSuperview(newSuperview)
-        setupFrameInSuperview(superview)
+    override func willMove(toSuperview newSuperview: UIView?) {
+        super.willMove(toSuperview: newSuperview)
+        centerActivityIndicator()
+        setupFrame(in: superview)
     }
 }
 
 private extension DefaultRefreshView {
     
-    func setupFrameInSuperview(newSuperview: UIView?) {
-        if let superview = newSuperview {
-            frame = CGRectMake(frame.origin.x, frame.origin.y, superview.frame.width, frame.height)
-        }
+    func setupFrame(in newSuperview: UIView?) {
+        guard let superview = newSuperview else { return }
+
+        frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: superview.frame.width, height: frame.height)
     }
     
      func centerActivityIndicator() {
         if let activityIndicator = activityIndicator {
-            activityIndicator.center = convertPoint(center, fromView: superview)
+            activityIndicator.center = convert(center, from: superview)
             activityIndicator.center.y += (sectionInsetBottom - sectionInsetTop) / 2
         }
     }
